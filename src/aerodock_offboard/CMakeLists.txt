@@ -18,6 +18,7 @@ target_compile_features(waypoint_mission PUBLIC cxx_std_17)
 target_compile_features(offboard_mission PUBLIC cxx_std_17)
 
 install(TARGETS offboard_mission waypoint_mission DESTINATION lib/${PROJECT_NAME})
-install(DIRECTORY config launch DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY config launch rviz DESTINATION share/${PROJECT_NAME})
+install(PROGRAMS scripts/trajectory_visualizer.py DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

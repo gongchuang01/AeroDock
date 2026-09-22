@@ -56,3 +56,16 @@ python3 tools/analyze_flight.py ~/aerodock/logs/waypoint-flight.csv
 ```
 
 The waypoint controller requires both spatial tolerance and a stability hold time before advancing. Every flight produces CSV telemetry for reproducible evaluation. See `docs/flight-validation.md`.
+
+
+## Visual simulation
+
+To watch the aircraft and its route on the Ubuntu desktop, run these in separate terminals:
+
+```bash
+./scripts/run_visual_sim.sh
+./scripts/run_visualization.sh
+./scripts/run_waypoints.sh
+```
+
+Gazebo shows the physical X500 flight. RViz2 shows numbered waypoints, the planned route, and the measured trajectory. See `docs/visual-simulation.md`.
