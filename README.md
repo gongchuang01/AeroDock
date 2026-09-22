@@ -70,22 +70,17 @@ To watch the aircraft and its route on the Ubuntu desktop, run these in separate
 
 Gazebo shows the physical X500 flight. RViz2 shows numbered waypoints, the planned route, and the measured trajectory. See `docs/visual-simulation.md`.
 
-## Obstacle sensing milestone
+## Lidar obstacle avoidance
 
-The repository now includes `scripts/run_obstacle_sim.sh`, which starts the PX4 X500 2D-lidar model in Gazebo's walls world. The next controller milestone will consume `/fmu/out/obstacle_distance` and enforce a stop/land safety policy.
-
-Run the lidar safety supervisor in another terminal:
+Run the complete perception-planning-control demonstration in two terminals:
 
 ```bash
-./scripts/run_obstacle_safety.sh
+./scripts/run_obstacle_sim.sh
+./scripts/run_avoidance_mission.sh
 ```
 
-It confirms a hazard across multiple scans, publishes minimum-distance and blocked-state topics, and commands PX4 to land when an armed vehicle crosses the configured threshold. See `docs/obstacle-safety.md`.
+The simulator launches an X500 with 2D lidar in the repository-owned obstacle world. The ROS 2 planner confirms frontal obstacles across multiple scans, compares left/right clearance, and publishes a temporary NED detour only after the aircraft reaches a safe altitude. The C++ waypoint controller executes that detour, holds, resumes the interrupted route, and lands after completing all five waypoints.
 
-The local avoidance planner can be started with:
+The verified integrated run detected an obstacle at 1.91 m, chose the clearer right side, reached the detour at 2.85 m altitude, resumed the route, landed, and disarmed. Telemetry records normal waypoint and `DETOUR` states for later analysis. See `docs/local-avoidance.md`.
 
-```bash
-./scripts/run_local_avoidance.sh
-```
-
-It compares left/right lidar clearance and publishes a temporary PX4-NED detour waypoint. See `docs/local-avoidance.md`.
+The independent emergency landing supervisor remains available through `./scripts/run_obstacle_safety.sh`; see `docs/obstacle-safety.md`.

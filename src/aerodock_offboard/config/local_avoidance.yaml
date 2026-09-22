@@ -6,3 +6,4 @@ local_avoidance_planner:
     lateral_offset_m: 2.0
     confirm_scans: 3
     require_armed: true
+    min_flight_altitude_m: 2.0

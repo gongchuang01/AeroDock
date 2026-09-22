@@ -8,12 +8,13 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(px4_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
 add_executable(offboard_mission src/offboard_mission.cpp)
 ament_target_dependencies(offboard_mission rclcpp px4_msgs)
 
 add_executable(waypoint_mission src/waypoint_mission.cpp)
-ament_target_dependencies(waypoint_mission rclcpp px4_msgs)
+ament_target_dependencies(waypoint_mission rclcpp px4_msgs geometry_msgs)
 target_compile_features(waypoint_mission PUBLIC cxx_std_17)
 target_compile_features(offboard_mission PUBLIC cxx_std_17)
 

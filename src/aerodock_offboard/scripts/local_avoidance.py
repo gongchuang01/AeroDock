@@ -9,7 +9,7 @@ from sensor_msgs.msg import LaserScan
 from std_msgs.msg import String
 from px4_msgs.msg import VehicleLocalPosition, VehicleStatus
 
-SCAN_TOPIC = "/world/walls/model/x500_lidar_2d_0/link/link/sensor/lidar_2d_v2/scan"
+SCAN_TOPIC = "/world/aerodock_obstacles/model/x500_lidar_2d_0/link/link/sensor/lidar_2d_v2/scan"
 
 class LocalAvoidancePlanner(Node):
     def __init__(self):
@@ -20,12 +20,14 @@ class LocalAvoidancePlanner(Node):
         self.declare_parameter("lateral_offset_m", 2.0)
         self.declare_parameter("confirm_scans", 3)
         self.declare_parameter("require_armed", True)
+        self.declare_parameter("min_flight_altitude_m", 2.0)
         self.trigger_distance = float(self.get_parameter("trigger_distance_m").value)
         self.clear_distance = float(self.get_parameter("clear_distance_m").value)
         self.forward_offset = float(self.get_parameter("forward_offset_m").value)
         self.lateral_offset = float(self.get_parameter("lateral_offset_m").value)
         self.confirm_scans = int(self.get_parameter("confirm_scans").value)
         self.require_armed = bool(self.get_parameter("require_armed").value)
+        self.min_flight_altitude = float(self.get_parameter("min_flight_altitude_m").value)
 
         self.position_valid = False
         self.north = self.east = self.altitude = self.heading = 0.0
@@ -112,6 +114,15 @@ class LocalAvoidancePlanner(Node):
             self.get_logger().warn("Obstacle detected but local position is not valid")
             return
 
+        if self.altitude < self.min_flight_altitude:
+            self.active = False
+            self.block_count = 0
+            self.publish_decision("WAITING_FOR_SAFE_ALTITUDE")
+            self.get_logger().info(
+                f"Obstacle ignored during takeoff: altitude={self.altitude:.2f} m, "
+                f"minimum={self.min_flight_altitude:.2f} m")
+            return
+
         left = self.clearance(left_values, msg.range_max)
         right = self.clearance(right_values, msg.range_max)
         choose_left = left >= right
@@ -143,9 +154,12 @@ def main():
     node = LocalAvoidancePlanner()
     try:
         rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
     finally:
         node.destroy_node()
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 if __name__ == "__main__":
     main()
