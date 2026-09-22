@@ -1,0 +1,8 @@
+local_avoidance_planner:
+  ros__parameters:
+    trigger_distance_m: 2.0
+    clear_distance_m: 2.6
+    forward_offset_m: 1.5
+    lateral_offset_m: 2.0
+    confirm_scans: 3
+    require_armed: true

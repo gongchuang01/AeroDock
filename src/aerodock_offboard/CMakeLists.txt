@@ -19,6 +19,6 @@ target_compile_features(offboard_mission PUBLIC cxx_std_17)
 
 install(TARGETS offboard_mission waypoint_mission DESTINATION lib/${PROJECT_NAME})
 install(DIRECTORY config launch rviz DESTINATION share/${PROJECT_NAME})
-install(PROGRAMS scripts/trajectory_visualizer.py scripts/obstacle_safety.py DESTINATION lib/${PROJECT_NAME})
+install(PROGRAMS scripts/trajectory_visualizer.py scripts/obstacle_safety.py scripts/local_avoidance.py DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

@@ -81,3 +81,11 @@ Run the lidar safety supervisor in another terminal:
 ```
 
 It confirms a hazard across multiple scans, publishes minimum-distance and blocked-state topics, and commands PX4 to land when an armed vehicle crosses the configured threshold. See `docs/obstacle-safety.md`.
+
+The local avoidance planner can be started with:
+
+```bash
+./scripts/run_local_avoidance.sh
+```
+
+It compares left/right lidar clearance and publishes a temporary PX4-NED detour waypoint. See `docs/local-avoidance.md`.

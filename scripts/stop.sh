@@ -8,4 +8,5 @@ pkill -f "rviz2.*aerodock.rviz" 2>/dev/null || true
 pkill -f "trajectory_visualizer.py" 2>/dev/null || true
 pkill -f "ros_gz_bridge parameter_bridge" 2>/dev/null || true
 pkill -f "obstacle_safety.py" 2>/dev/null || true
+pkill -f "local_avoidance.py" 2>/dev/null || true
 echo "AeroDock simulation and visualization stopped."
