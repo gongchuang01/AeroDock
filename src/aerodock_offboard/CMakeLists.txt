@@ -11,9 +11,13 @@ find_package(px4_msgs REQUIRED)
 
 add_executable(offboard_mission src/offboard_mission.cpp)
 ament_target_dependencies(offboard_mission rclcpp px4_msgs)
+
+add_executable(waypoint_mission src/waypoint_mission.cpp)
+ament_target_dependencies(waypoint_mission rclcpp px4_msgs)
+target_compile_features(waypoint_mission PUBLIC cxx_std_17)
 target_compile_features(offboard_mission PUBLIC cxx_std_17)
 
-install(TARGETS offboard_mission DESTINATION lib/${PROJECT_NAME})
+install(TARGETS offboard_mission waypoint_mission DESTINATION lib/${PROJECT_NAME})
 install(DIRECTORY config launch DESTINATION share/${PROJECT_NAME})
 
 ament_package()

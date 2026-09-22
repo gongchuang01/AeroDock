@@ -42,3 +42,17 @@ The first verified simulation reached 2.93 m for a 3.0 m target, landed, disarme
 Change target height and hover time in `src/aerodock_offboard/config/mission.yaml`.
 
 > `NAV_DLL_ACT=0` is applied only by the SITL helper because this headless VM has no ground-control station. Do not copy that setting to a real aircraft.
+
+
+## Waypoint mission
+
+Run a 3 m altitude square route and return to the launch point:
+
+```bash
+./scripts/run_sitl.sh
+./scripts/run_waypoints.sh
+python3 tools/analyze_flight.py ~/aerodock/logs/waypoint-flight.csv
+./scripts/stop.sh
+```
+
+The waypoint controller requires both spatial tolerance and a stability hold time before advancing. Every flight produces CSV telemetry for reproducible evaluation. See `docs/flight-validation.md`.
