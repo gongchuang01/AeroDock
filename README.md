@@ -69,3 +69,7 @@ To watch the aircraft and its route on the Ubuntu desktop, run these in separate
 ```
 
 Gazebo shows the physical X500 flight. RViz2 shows numbered waypoints, the planned route, and the measured trajectory. See `docs/visual-simulation.md`.
+
+## Obstacle sensing milestone
+
+The repository now includes `scripts/run_obstacle_sim.sh`, which starts the PX4 X500 2D-lidar model in Gazebo's walls world. The next controller milestone will consume `/fmu/out/obstacle_distance` and enforce a stop/land safety policy.
