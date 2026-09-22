@@ -29,6 +29,6 @@ if ! grep -q "Startup script returned successfully" "$LOG_DIR/obstacle-sim.log";
 fi
 echo "param set NAV_DLL_ACT 0" >> "$CMD_FILE"
 LIDAR_TOPIC="/world/walls/model/x500_lidar_2d_0/link/link/sensor/lidar_2d_v2/scan"
-nohup ros2 run ros_gz_bridge parameter_bridge "$LIDAR_TOPIC@sensor_msgs/msg/LaserScan[ignition.msgs.LaserScan" > "$LOG_DIR/lidar-bridge.log" 2>&1 &
+nohup ros2 run ros_gz_bridge parameter_bridge "$LIDAR_TOPIC@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan" > "$LOG_DIR/lidar-bridge.log" 2>&1 &
 echo $! > "$LOG_DIR/lidar-bridge.pid"
 echo "Obstacle SITL ready: walls world + 2D lidar bridged to ROS 2."

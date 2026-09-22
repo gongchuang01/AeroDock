@@ -1,0 +1,6 @@
+obstacle_safety:
+  ros__parameters:
+    stop_distance_m: 1.5
+    forward_sector_deg: 60.0
+    confirm_scans: 3
+    action: land

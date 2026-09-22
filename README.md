@@ -73,3 +73,11 @@ Gazebo shows the physical X500 flight. RViz2 shows numbered waypoints, the plann
 ## Obstacle sensing milestone
 
 The repository now includes `scripts/run_obstacle_sim.sh`, which starts the PX4 X500 2D-lidar model in Gazebo's walls world. The next controller milestone will consume `/fmu/out/obstacle_distance` and enforce a stop/land safety policy.
+
+Run the lidar safety supervisor in another terminal:
+
+```bash
+./scripts/run_obstacle_safety.sh
+```
+
+It confirms a hazard across multiple scans, publishes minimum-distance and blocked-state topics, and commands PX4 to land when an armed vehicle crosses the configured threshold. See `docs/obstacle-safety.md`.
