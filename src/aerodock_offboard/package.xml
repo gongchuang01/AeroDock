@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>aerodock_offboard</name>
+  <version>0.1.0</version>
+  <description>Safety-aware PX4 Offboard mission controller for AeroDock.</description>
+  <maintainer email="gc@example.com">gc</maintainer>
+  <license>MIT</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>rclcpp</depend>
+  <depend>px4_msgs</depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <export><build_type>ament_cmake</build_type></export>
+</package>

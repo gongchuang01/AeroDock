@@ -1,0 +1,4 @@
+offboard_mission:
+  ros__parameters:
+    takeoff_height_m: 3.0
+    hover_seconds: 10.0
