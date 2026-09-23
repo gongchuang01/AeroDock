@@ -1,0 +1,10 @@
+services:
+  aerodock:
+    build:
+      context: .
+      args:
+        PX4_MSGS_REF: release/1.16
+    image: aerodock:humble
+    stdin_open: true
+    tty: true
+    command: bash

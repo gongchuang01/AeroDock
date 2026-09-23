@@ -54,6 +54,17 @@ python3 -m compileall -q src tools tests
 find scripts -type f -name '*.sh' -print0 | xargs -0 -n1 bash -n
 ```
 
+## Cross-platform Docker build
+
+Windows, macOS, and Linux users can reproduce the ROS 2 build and planner tests with Docker Desktop or Docker Engine:
+
+```bash
+docker compose build
+docker compose run --rm aerodock
+```
+
+This container targets development and verification. The complete PX4 SITL and Gazebo graphical demonstration remains supported on Ubuntu 22.04. See `docs/docker.md` for commands and limitations.
+
 ## Run
 
 ```bash
