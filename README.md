@@ -46,7 +46,7 @@ See `docs/architecture.md` for the data flow and `docs/project-status.md` for im
 
 ## Automated quality checks
 
-The GitHub Actions workflow compiles every Python source, runs ROS-independent lidar geometry and detour-planning unit tests, and validates every shell script on each push and pull request. Run the same fast checks locally:
+The GitHub Actions workflow compiles every Python source, runs ROS-independent lidar geometry and detour-planning unit tests, validates every shell script, and performs a clean ROS 2 Humble build with the PX4 v1.16 message definitions on each push and pull request. Run the same fast checks locally:
 
 ```bash
 python3 -m unittest discover -s tests -v

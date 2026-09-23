@@ -18,3 +18,28 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: Validate shell scripts
         run: find scripts -type f -name '*.sh' -print0 | xargs -0 -n1 bash -n
+
+  ros2-build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out AeroDock
+        uses: actions/checkout@v4
+        with:
+          path: src/AeroDock
+      - name: Check out PX4 message definitions
+        uses: actions/checkout@v4
+        with:
+          repository: PX4/px4_msgs
+          ref: release/1.16
+          path: src/px4_msgs
+      - name: Install ROS 2 Humble
+        uses: ros-tooling/setup-ros@v0.7
+        with:
+          required-ros-distributions: humble
+      - name: Install package dependencies
+        run: rosdep install --from-paths src --ignore-src --rosdistro humble -r -y
+      - name: Build ROS 2 packages
+        shell: bash
+        run: |
+          source /opt/ros/humble/setup.bash
+          colcon build --packages-up-to aerodock_offboard --event-handlers console_direct+
