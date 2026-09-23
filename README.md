@@ -1,21 +1,50 @@
 # AeroDock
 
 [![Quality](https://github.com/gongchuang01/AeroDock/actions/workflows/quality.yml/badge.svg)](https://github.com/gongchuang01/AeroDock/actions/workflows/quality.yml)
+[![Docker](https://github.com/gongchuang01/AeroDock/actions/workflows/docker.yml/badge.svg)](https://github.com/gongchuang01/AeroDock/actions/workflows/docker.yml)
 
 A ROS 2 Humble and PX4 project for autonomous UAV mission execution in Gazebo Harmonic.
 
-## Current milestone
+## What it demonstrates
 
-The C++ Offboard controller runs a safety-aware state machine:
+- a C++ Offboard state machine for arming, takeoff, waypoint flight, landing, and failsafe transitions;
+- a ROS 2 lidar planner with persistence filtering, safe-altitude gating, left/right clearance comparison, and NED detour generation;
+- temporary detour execution followed by automatic recovery of the interrupted route;
+- Gazebo physics, PX4 SITL, uXRCE-DDS, ROS 2 nodes, RViz visualization, and CSV telemetry in one reproducible workflow;
+- automated unit tests, telemetry acceptance tests, clean ROS 2 builds, and a portable Docker build in GitHub Actions.
 
-1. stream position setpoints before mode switching;
-2. request Offboard mode and arm;
-3. climb to a configurable NED position;
-4. hover while reporting measured altitude;
-5. command landing and wait for automatic disarm;
-6. fall back to landing on arming or mission timeout.
+## System architecture
 
-The first verified simulation reached 2.93 m for a 3.0 m target, landed, disarmed, and exited normally.
+```mermaid
+flowchart LR
+    GZ[Gazebo Harmonic<br/>X500 + obstacles + lidar] -->|LaserScan| BR[ros_gz_bridge]
+    BR --> LP[Local avoidance planner]
+    LP -->|temporary NED detour| WM[C++ waypoint mission]
+    WM -->|Offboard setpoints| PX4[PX4 SITL]
+    PX4 -->|position and vehicle state| WM
+    PX4 -->|local position| LP
+    PX4 -->|telemetry| CSV[CSV recorder and acceptance checks]
+    SS[Emergency landing supervisor] -->|land command| PX4
+```
+
+## Verified integrated result
+
+| Acceptance metric | Result |
+|---|---:|
+| Route waypoints reached | 5 / 5 |
+| Automated acceptance checks | 7 / 7 passed |
+| Detour minimum error | 0.20 m |
+| Maximum altitude | 3.09 m |
+| Final altitude after landing | 0.07 m |
+| Mission duration | 50.4 s |
+| Telemetry samples | 98 |
+
+The raw accepted flight is stored in `artifacts/flight/verified-avoidance.csv`. Anyone can reproduce the report without running Gazebo:
+
+```bash
+python3 tools/validate_avoidance.py artifacts/flight/verified-avoidance.csv
+python3 tools/analyze_flight.py artifacts/flight/verified-avoidance.csv
+```
 
 ## Stack
 
