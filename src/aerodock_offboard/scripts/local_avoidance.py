@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 import math
-import statistics
 import rclpy
 from rclpy.node import Node
+from rclpy.executors import ExternalShutdownException
 from rclpy.qos import qos_profile_sensor_data
 from geometry_msgs.msg import PointStamped
 from sensor_msgs.msg import LaserScan
 from std_msgs.msg import String
 from px4_msgs.msg import VehicleLocalPosition, VehicleStatus
+from avoidance_core import clearance, detour_target, sector_values
 
 SCAN_TOPIC = "/world/aerodock_obstacles/model/x500_lidar_2d_0/link/link/sensor/lidar_2d_v2/scan"
 
@@ -64,22 +65,12 @@ class LocalAvoidancePlanner(Node):
 
     @staticmethod
     def sector_values(msg, low_deg, high_deg):
-        low = math.radians(low_deg)
-        high = math.radians(high_deg)
-        values = []
-        angle = msg.angle_min
-        for distance in msg.ranges:
-            if low <= angle <= high and math.isfinite(distance):
-                if msg.range_min <= distance <= msg.range_max:
-                    values.append(float(distance))
-            angle += msg.angle_increment
-        return values
+        return sector_values(msg.ranges, msg.angle_min, msg.angle_increment,
+                             msg.range_min, msg.range_max, low_deg, high_deg)
 
     @staticmethod
     def clearance(values, range_max):
-        if not values:
-            return float(range_max)
-        return statistics.median(values)
+        return clearance(values, range_max)
 
     def publish_decision(self, text):
         msg = String()
@@ -135,14 +126,10 @@ class LocalAvoidancePlanner(Node):
         left = self.clearance(left_values, msg.range_max)
         right = self.clearance(right_values, msg.range_max)
         choose_left = left >= right
-        lateral_right = -self.lateral_offset if choose_left else self.lateral_offset
-
         # Sensor forward/right offset converted to PX4 local NED north/east.
-        sensor_heading = self.heading + self.sensor_yaw_offset
-        target_north = (self.north + self.forward_offset * math.cos(sensor_heading)
-                        - lateral_right * math.sin(sensor_heading))
-        target_east = (self.east + self.forward_offset * math.sin(sensor_heading)
-                       + lateral_right * math.cos(sensor_heading))
+        target_north, target_east = detour_target(
+            self.north, self.east, self.heading, self.sensor_yaw_offset,
+            self.forward_offset, self.lateral_offset, choose_left)
 
         point = PointStamped()
         point.header.stamp = self.get_clock().now().to_msg()
@@ -165,7 +152,7 @@ def main():
     node = LocalAvoidancePlanner()
     try:
         rclpy.spin(node)
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, ExternalShutdownException):
         pass
     finally:
         node.destroy_node()

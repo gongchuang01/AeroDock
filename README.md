@@ -1,5 +1,7 @@
 # AeroDock
 
+[![Quality](https://github.com/gongchuang01/AeroDock/actions/workflows/quality.yml/badge.svg)](https://github.com/gongchuang01/AeroDock/actions/workflows/quality.yml)
+
 A ROS 2 Humble and PX4 project for autonomous UAV mission execution in Gazebo Harmonic.
 
 ## Current milestone
@@ -41,6 +43,16 @@ Before starting Gazebo, verify the ROS, PX4, DDS, disk, user-group, and optional
 ```
 
 See `docs/architecture.md` for the data flow and `docs/project-status.md` for implemented features and current limitations.
+
+## Automated quality checks
+
+The GitHub Actions workflow compiles every Python source, runs ROS-independent lidar geometry and detour-planning unit tests, and validates every shell script on each push and pull request. Run the same fast checks locally:
+
+```bash
+python3 -m unittest discover -s tests -v
+python3 -m compileall -q src tools tests
+find scripts -type f -name '*.sh' -print0 | xargs -0 -n1 bash -n
+```
 
 ## Run
 
