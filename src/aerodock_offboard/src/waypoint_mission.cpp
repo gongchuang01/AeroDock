@@ -70,7 +70,8 @@ public:
       "/aerodock/avoidance/detour", 10,
       [this](geometry_msgs::msg::PointStamped::UniquePtr m) {
         if (!enable_detours_ || state_ != State::NAVIGATING || !armed_ ||
-            detour_active_ || waypoint_index_ == 0) return;
+            detour_active_ || waypoint_index_ == 0 ||
+            inside_since_.nanoseconds() != 0) return;
         if (m->header.frame_id != "px4_ned_altitude") {
           RCLCPP_WARN(get_logger(), "Ignoring detour with frame '%s'", m->header.frame_id.c_str());
           return;

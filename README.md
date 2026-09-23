@@ -93,6 +93,16 @@ python3 tools/validate_avoidance.py ~/aerodock/logs/waypoint-flight.csv
 
 The simulator launches an X500 with 2D lidar in the repository-owned obstacle world. The ROS 2 planner confirms frontal obstacles across multiple scans, compares left/right clearance, and publishes a temporary NED detour only after the aircraft reaches a safe altitude. The C++ waypoint controller executes that detour, holds, resumes the interrupted route, and lands after completing all five waypoints.
 
-The verified integrated run detected an obstacle at 1.91 m, chose the clearer right side, reached the detour at 2.85 m altitude, resumed the route, landed, and disarmed. The launch exits automatically when the mission controller finishes. The validation command turns telemetry into explicit pass/fail checks for all waypoints, the detour, climb height, and landing. See `docs/local-avoidance.md`.
+The final verified integrated run completed all five waypoints, executed a local detour with 0.20 m minimum error, climbed to 3.09 m, landed at 0.07 m final altitude, and passed all seven acceptance checks. The 50.4 s run recorded 98 telemetry samples. The launch exits automatically when the mission controller finishes. The validation command turns telemetry into explicit pass/fail checks for all waypoints, the detour, climb height, and landing. See `docs/local-avoidance.md`.
+
+The helper defaults to headless software rendering and reduces the simulated lidar to 90 samples at 5 Hz for small VMs. When VMware cannot create a headless EGL context, use the active desktop Xwayland session:
+
+```bash
+AERODOCK_RENDER_MODE=vmware-gui \
+DISPLAY=:1024 XAUTHORITY=/tmp/aerodock-xauth \
+./scripts/run_obstacle_sim.sh
+```
+
+The display number and authority path are host-specific; use the values from the active Xwayland process. The simulator can render through that desktop session while mission commands still run over SSH.
 
 The independent emergency landing supervisor remains available through `./scripts/run_obstacle_safety.sh`; see `docs/obstacle-safety.md`.

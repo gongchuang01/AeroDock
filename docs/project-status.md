@@ -13,7 +13,9 @@
 
 ## Verified benchmark
 
-A recorded integrated run climbed to 3 m, detected an obstacle at 1.91 m, selected the clearer side, reached the detour at 2.85 m altitude, resumed the five-waypoint route, landed, and disarmed. The acceptance tool checks waypoint accuracy, detour accuracy, climb height, landing state, and final altitude.
+The final integrated acceptance run completed in 50.4 s with 98 telemetry samples. It reached all five route waypoints within the 0.50 m threshold, executed the lidar-planned detour with 0.20 m minimum error, reached 3.09 m maximum altitude, entered the landing state, and finished at 0.07 m altitude. All seven validation checks passed.
+
+The controller ignores new detour requests while holding inside a waypoint acceptance region. This prevents a persistent lidar return from replacing the final return-to-home hold and blocking the landing transition.
 
 ## Known limitations
 

@@ -1,6 +1,6 @@
 waypoint_mission:
   ros__parameters:
-    waypoints: [0.0, 0.0, 3.0, 0.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 0.0, 3.0, 0.0, 0.0, 3.0]
+    waypoints: [0.0, 0.0, 3.0, 3.0, 0.0, 3.0, 3.0, 3.0, 3.0, 0.0, 3.0, 3.0, 0.0, 0.0, 3.0]
     acceptance_radius_m: 0.45
     hold_seconds: 1.5
     mission_timeout_seconds: 180.0
