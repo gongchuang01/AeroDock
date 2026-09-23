@@ -21,6 +21,7 @@ class LocalAvoidancePlanner(Node):
         self.declare_parameter("confirm_scans", 3)
         self.declare_parameter("require_armed", True)
         self.declare_parameter("min_flight_altitude_m", 2.0)
+        self.declare_parameter("sensor_yaw_offset_deg", 90.0)
         self.trigger_distance = float(self.get_parameter("trigger_distance_m").value)
         self.clear_distance = float(self.get_parameter("clear_distance_m").value)
         self.forward_offset = float(self.get_parameter("forward_offset_m").value)
@@ -28,6 +29,8 @@ class LocalAvoidancePlanner(Node):
         self.confirm_scans = int(self.get_parameter("confirm_scans").value)
         self.require_armed = bool(self.get_parameter("require_armed").value)
         self.min_flight_altitude = float(self.get_parameter("min_flight_altitude_m").value)
+        self.sensor_yaw_offset = math.radians(
+            float(self.get_parameter("sensor_yaw_offset_deg").value))
 
         self.position_valid = False
         self.north = self.east = self.altitude = self.heading = 0.0
@@ -35,6 +38,7 @@ class LocalAvoidancePlanner(Node):
         self.clear_count = 0
         self.active = False
         self.armed = False
+        self.last_detour_ns = 0
 
         self.detour_pub = self.create_publisher(PointStamped, "/aerodock/avoidance/detour", 10)
         self.decision_pub = self.create_publisher(String, "/aerodock/avoidance/decision", 10)
@@ -51,7 +55,7 @@ class LocalAvoidancePlanner(Node):
         self.armed = msg.arming_state == VehicleStatus.ARMING_STATE_ARMED
 
     def on_position(self, msg):
-        if msg.xy_valid and msg.z_valid and msg.heading_good_for_control:
+        if msg.xy_valid and msg.z_valid:
             self.north = float(msg.x)
             self.east = float(msg.y)
             self.altitude = float(-msg.z)
@@ -95,8 +99,12 @@ class LocalAvoidancePlanner(Node):
             self.clear_count += 1
             self.block_count = 0
 
+        now_ns = self.get_clock().now().nanoseconds
         if not self.active and self.block_count >= self.confirm_scans:
             self.active = True
+            self.make_detour(msg, front, left_values, right_values)
+        elif (self.active and front < self.trigger_distance and
+              now_ns - self.last_detour_ns >= 1_000_000_000):
             self.make_detour(msg, front, left_values, right_values)
         elif self.active and self.clear_count >= self.confirm_scans:
             self.active = False
@@ -104,6 +112,7 @@ class LocalAvoidancePlanner(Node):
             self.get_logger().info("Path clear; resume original route")
 
     def make_detour(self, msg, front, left_values, right_values):
+        self.last_detour_ns = self.get_clock().now().nanoseconds
         if self.require_armed and not self.armed:
             self.publish_decision("BLOCKED_VEHICLE_DISARMED")
             self.get_logger().warn("Obstacle detected while vehicle is disarmed; no detour published")
@@ -128,11 +137,12 @@ class LocalAvoidancePlanner(Node):
         choose_left = left >= right
         lateral_right = -self.lateral_offset if choose_left else self.lateral_offset
 
-        # Body forward/right offset converted to PX4 local NED north/east.
-        target_north = (self.north + self.forward_offset * math.cos(self.heading)
-                        - lateral_right * math.sin(self.heading))
-        target_east = (self.east + self.forward_offset * math.sin(self.heading)
-                       + lateral_right * math.cos(self.heading))
+        # Sensor forward/right offset converted to PX4 local NED north/east.
+        sensor_heading = self.heading + self.sensor_yaw_offset
+        target_north = (self.north + self.forward_offset * math.cos(sensor_heading)
+                        - lateral_right * math.sin(sensor_heading))
+        target_east = (self.east + self.forward_offset * math.sin(sensor_heading)
+                       + lateral_right * math.cos(sensor_heading))
 
         point = PointStamped()
         point.header.stamp = self.get_clock().now().to_msg()
@@ -141,6 +151,7 @@ class LocalAvoidancePlanner(Node):
         point.point.y = target_east
         point.point.z = self.altitude
         self.detour_pub.publish(point)
+        self.last_detour_ns = self.get_clock().now().nanoseconds
 
         side = "LEFT" if choose_left else "RIGHT"
         decision = (f"DETOUR_{side} front={front:.2f}m "

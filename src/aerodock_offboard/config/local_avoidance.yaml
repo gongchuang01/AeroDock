@@ -7,3 +7,4 @@ local_avoidance_planner:
     confirm_scans: 3
     require_armed: true
     min_flight_altitude_m: 2.0
+    sensor_yaw_offset_deg: 90.0

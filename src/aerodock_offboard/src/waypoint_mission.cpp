@@ -69,7 +69,8 @@ public:
     detour_sub_ = create_subscription<geometry_msgs::msg::PointStamped>(
       "/aerodock/avoidance/detour", 10,
       [this](geometry_msgs::msg::PointStamped::UniquePtr m) {
-        if (!enable_detours_ || state_ != State::NAVIGATING || !armed_) return;
+        if (!enable_detours_ || state_ != State::NAVIGATING || !armed_ ||
+            detour_active_ || waypoint_index_ == 0) return;
         if (m->header.frame_id != "px4_ned_altitude") {
           RCLCPP_WARN(get_logger(), "Ignoring detour with frame '%s'", m->header.frame_id.c_str());
           return;
@@ -146,6 +147,7 @@ private:
   }
 
   void land(const std::string &reason) {
+    detour_active_ = false;
     command(px4_msgs::msg::VehicleCommand::VEHICLE_CMD_NAV_LAND);
     last_command_ = now();
     transition(State::LANDING, reason);
@@ -167,7 +169,8 @@ private:
     if (mission_seconds() > timeout_seconds_ && state_ != State::LANDING) {
       land("Mission timeout; landing"); return;
     }
-    if (detour_active_ && (now() - detour_start_).seconds() > detour_timeout_seconds_) {
+    if (state_ == State::NAVIGATING && detour_active_ &&
+        (now() - detour_start_).seconds() > detour_timeout_seconds_) {
       land("Detour timeout; landing"); return;
     }
 

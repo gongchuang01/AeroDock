@@ -77,10 +77,12 @@ Run the complete perception-planning-control demonstration in two terminals:
 ```bash
 ./scripts/run_obstacle_sim.sh
 ./scripts/run_avoidance_mission.sh
+python3 tools/validate_avoidance.py ~/aerodock/logs/waypoint-flight.csv
+./scripts/stop.sh
 ```
 
 The simulator launches an X500 with 2D lidar in the repository-owned obstacle world. The ROS 2 planner confirms frontal obstacles across multiple scans, compares left/right clearance, and publishes a temporary NED detour only after the aircraft reaches a safe altitude. The C++ waypoint controller executes that detour, holds, resumes the interrupted route, and lands after completing all five waypoints.
 
-The verified integrated run detected an obstacle at 1.91 m, chose the clearer right side, reached the detour at 2.85 m altitude, resumed the route, landed, and disarmed. Telemetry records normal waypoint and `DETOUR` states for later analysis. See `docs/local-avoidance.md`.
+The verified integrated run detected an obstacle at 1.91 m, chose the clearer right side, reached the detour at 2.85 m altitude, resumed the route, landed, and disarmed. The launch exits automatically when the mission controller finishes. The validation command turns telemetry into explicit pass/fail checks for all waypoints, the detour, climb height, and landing. See `docs/local-avoidance.md`.
 
 The independent emergency landing supervisor remains available through `./scripts/run_obstacle_safety.sh`; see `docs/obstacle-safety.md`.
