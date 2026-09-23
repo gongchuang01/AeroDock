@@ -39,11 +39,14 @@ flowchart LR
 | Mission duration | 50.4 s |
 | Telemetry samples | 98 |
 
-The raw accepted flight is stored in `artifacts/flight/verified-avoidance.csv`. Anyone can reproduce the report without running Gazebo:
+![Verified AeroDock flight path and altitude](artifacts/flight/verified-avoidance.svg)
+
+The raw accepted flight is stored in `artifacts/flight/verified-avoidance.csv`. Anyone can reproduce the report and regenerate the figure without running Gazebo:
 
 ```bash
 python3 tools/validate_avoidance.py artifacts/flight/verified-avoidance.csv
 python3 tools/analyze_flight.py artifacts/flight/verified-avoidance.csv
+python3 tools/render_flight_svg.py artifacts/flight/verified-avoidance.csv artifacts/flight/verified-avoidance.svg
 ```
 
 ## Stack

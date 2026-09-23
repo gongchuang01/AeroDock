@@ -10,3 +10,7 @@ python3 tools/analyze_flight.py artifacts/flight/verified-avoidance.csv
 ```
 
 The recording contains 98 samples over 50.4 seconds. It is committed as a regression fixture so changes to analysis or validation logic are checked against a real successful mission.
+
+## Visualization
+
+`verified-avoidance.svg` is generated deterministically from the CSV with `tools/render_flight_svg.py`. It shows the measured top-down route, commanded waypoints and lidar detour, plus altitude over time.

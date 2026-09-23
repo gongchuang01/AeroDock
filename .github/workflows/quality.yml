@@ -18,6 +18,10 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: Validate recorded acceptance flight
         run: python tools/validate_avoidance.py artifacts/flight/verified-avoidance.csv
+      - name: Verify recorded flight visualization
+        run: |
+          python tools/render_flight_svg.py artifacts/flight/verified-avoidance.csv /tmp/verified-avoidance.svg
+          cmp artifacts/flight/verified-avoidance.svg /tmp/verified-avoidance.svg
       - name: Validate shell scripts
         run: find scripts -type f -name '*.sh' -print0 | xargs -0 -n1 bash -n
 
