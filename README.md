@@ -32,6 +32,16 @@ The first verified simulation reached 2.93 m for a 3.0 m target, landed, disarme
 - `scripts/stop.sh`: stop the simulation
 - `docs`: architecture and validation notes
 
+## Environment check
+
+Before starting Gazebo, verify the ROS, PX4, DDS, disk, user-group, and optional OpenGL prerequisites:
+
+```bash
+./scripts/doctor.sh
+```
+
+See `docs/architecture.md` for the data flow and `docs/project-status.md` for implemented features and current limitations.
+
 ## Run
 
 ```bash
