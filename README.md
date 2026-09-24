@@ -1,5 +1,7 @@
 # AeroDock
 
+[English](README.md) | [简体中文](README.zh-CN.md)
+
 [![Quality](https://github.com/gongchuang01/AeroDock/actions/workflows/quality.yml/badge.svg)](https://github.com/gongchuang01/AeroDock/actions/workflows/quality.yml)
 [![Docker](https://github.com/gongchuang01/AeroDock/actions/workflows/docker.yml/badge.svg)](https://github.com/gongchuang01/AeroDock/actions/workflows/docker.yml)
 
