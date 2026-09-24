@@ -1,4 +1,13 @@
 #!/usr/bin/env bash
+
+# Non-interactive shells (for example SSH and CI) do not source the user's
+# ROS environment automatically. Load the system installation when present so
+# the command checks below report the installed environment accurately.
+if [ -f /opt/ros/humble/setup.bash ]; then
+  set +u
+  source /opt/ros/humble/setup.bash
+fi
+
 set -u
 AERODOCK_HOME="${AERODOCK_HOME:-$HOME/aerodock}"
 failures=0

@@ -119,7 +119,7 @@ class LocalAvoidancePlanner(Node):
             self.block_count = 0
             self.publish_decision("WAITING_FOR_SAFE_ALTITUDE")
             self.get_logger().info(
-                f"Obstacle ignored during takeoff: altitude={self.altitude:.2f} m, "
+                f"Obstacle ignored below avoidance altitude: altitude={self.altitude:.2f} m, "
                 f"minimum={self.min_flight_altitude:.2f} m")
             return
 
